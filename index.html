@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rational Fractions Quest - Student Portal</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --secondary: #059669;
+      --bg-gradient: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #1d4ed8 100%);
+      --card-bg: rgba(255, 255, 255, 0.96);
+      --text: #0f172a;
+      --border: #cbd5e1;
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Fredoka', 'Segoe UI', system-ui, -apple-system, sans-serif; }
+    
+    body { 
+      background: var(--bg-gradient); 
+      color: var(--text); 
+      padding: 1.5rem 1rem; 
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container { width: 100%; max-width: 750px; }
+    
+    .card { 
+      background: var(--card-bg); 
+      border-radius: 20px; 
+      padding: 2rem; 
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25); 
+      margin-bottom: 1.5rem; 
+      backdrop-filter: blur(10px);
+      border: 3px solid #ffffff;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 { 
+      color: #0369a1; 
+      font-size: 2rem;
+      margin-bottom: 0.5rem; 
+      text-align: center;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #334155;
+      font-size: 1.05rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+    
+    .form-group { margin-bottom: 1rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    label { display: block; margin-bottom: 0.4rem; font-weight: 700; color: #1e293b; }
+    
+    input[type="text"], input[type="number"] { 
+      width: 100%; 
+      padding: 0.8rem 1rem; 
+      border: 2px solid var(--border); 
+      border-radius: 12px; 
+      font-size: 1.1rem; 
+      outline: none;
+      background: #f8fafc;
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.2);
+      background: #ffffff;
+    }
+    
+    .btn-main { 
+      background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); 
+      color: white; 
+      border: none; 
+      padding: 0.9rem 1.8rem; 
+      border-radius: 12px; 
+      font-size: 1.15rem; 
+      cursor: pointer; 
+      font-weight: 700; 
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+      width: 100%;
+      transition: transform 0.1s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-main:active { transform: scale(0.98); }
+    .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35); }
+
+    .stats-bar { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      background: #f0f9ff; 
+      padding: 0.8rem 1.2rem; 
+      border-radius: 14px; 
+      margin-bottom: 1.2rem; 
+      font-weight: 700; 
+      color: #0369a1;
+      border: 2px solid #bae6fd;
+    }
+
+    .badge-score {
+      background: #fef3c7;
+      color: #92400e;
+      padding: 0.35rem 0.8rem;
+      border-radius: 20px;
+      border: 2px solid #fcd34d;
+    }
+
+    .lives-container {
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+    }
+
+    .question-box { 
+      background: #0f172a; 
+      color: #38bdf8;
+      padding: 1.5rem; 
+      border-radius: 16px; 
+      font-size: 1.6rem; 
+      text-align: center; 
+      margin-bottom: 1.2rem; 
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+      border: 2px solid #0284c7;
+    }
+
+    /* Standard Vertical Fraction Formatting with Visible Fraction Lines */
+    .math-expression {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      font-size: 1.8rem;
+      margin-top: 0.8rem;
+    }
+
+    .math-fraction {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+    }
+
+    .math-num {
+      border-bottom: 2px solid #38bdf8;
+      padding: 0 0.6rem 0.3rem 0.6rem;
+      text-align: center;
+      line-height: 1.1;
+      width: 100%;
+    }
+
+    .math-den {
+      padding: 0.3rem 0.6rem 0 0.6rem;
+      text-align: center;
+      line-height: 1.1;
+      width: 100%;
+    }
+
+    .math-op {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #38bdf8;
+      margin: 0 0.2rem;
+    }
+
+    /* Stacked Fraction Input Design */
+    .fraction-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      background: #f8fafc;
+      padding: 1.2rem;
+      border-radius: 16px;
+      border: 2px dashed #cbd5e1;
+    }
+
+    .input-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .fraction-box {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .frac-input-field {
+      width: 100%;
+      height: 52px;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 0.5rem 1rem;
+      font-size: 1.35rem;
+      font-weight: bold;
+      color: #0f172a;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+    }
+
+    .frac-input-field.active {
+      border-color: var(--primary);
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.25);
+    }
+
+    .frac-line {
+      width: 100%;
+      height: 4px;
+      background: #0f172a;
+      border-radius: 2px;
+      margin: 0.6rem 0;
+    }
+
+    .math-keyboard {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.4rem;
+      background: #f1f5f9;
+      padding: 0.8rem;
+      border-radius: 14px;
+      border: 1px solid #cbd5e1;
+      margin-bottom: 1.2rem;
+    }
+
+    .key-btn {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 0.65rem 0.2rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+      cursor: pointer;
+      box-shadow: 0 2px 0 #cbd5e1;
+      user-select: none;
+    }
+
+    .key-btn:active {
+      transform: translateY(2px);
+      box-shadow: none;
+    }
+
+    .key-btn.action { background: #e2e8f0; color: #0f172a; }
+    .key-btn.danger { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+    .key-btn.var-key { background: #e0f2fe; color: #0369a1; border-color: #7dd3fc; }
+
+    .feedback { 
+      font-weight: 800; 
+      text-align: center; 
+      margin-top: 0.8rem; 
+      min-height: 38px; 
+      font-size: 1.05rem;
+      border-radius: 10px;
+      padding: 0.5rem;
+    }
+
+    .feedback.correct { color: #065f46; background: #d1fae5; border: 2px solid #34d399; }
+    .feedback.incorrect { color: #991b1b; background: #fee2e2; border: 2px solid #f87171; }
+    
+    .sync-status {
+      margin-top: 1rem;
+      padding: 0.6rem;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+    .sync-status.sending { background: #e0f2fe; color: #0369a1; }
+    .sync-status.success { background: #d1fae5; color: #065f46; }
+    .sync-status.error { background: #fef3c7; color: #92400e; }
+
+    .hidden { display: none !important; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="container">
+    <!-- Registration Screen -->
+    <div id="start-screen" class="card">
+      <h1>➗ Rational Fractions Quest</h1>
+      <p class="subtitle">Reach <strong>10 marks</strong> by simplifying algebraic fractions!<br>You have <strong>5 lives</strong> ❤️. Answer carefully!</p>
+      <form id="start-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="student-class">🏫 Class:</label>
+            <input type="text" id="student-class" required placeholder="e.g. 2B" pattern="^[a-zA-Z0-9]+$">
+          </div>
+          <div class="form-group">
+            <label for="student-class-num">🔢 Class No.:</label>
+            <input type="number" id="student-class-num" min="1" max="50" required placeholder="e.g. 12">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="student-name">👤 English Full Name:</label>
+          <input type="text" id="student-name" required placeholder="e.g. Chan Tai Man" pattern="^[a-zA-Z\s]+$">
+        </div>
+        <button type="submit" class="btn-main" style="margin-top: 0.5rem;">Start Quest 🚀</button>
+      </form>
+    </div>
+
+    <!-- Practice Screen -->
+    <div id="practice-screen" class="card hidden">
+      <div class="stats-bar">
+        <div>👤 <span id="display-info"></span></div>
+        <div class="badge-score">⭐ <span id="current-score">0</span> / 10</div>
+        <div class="lives-container" id="lives-display">❤️❤️❤️❤️❤️</div>
+        <div>⏱ <span id="stopwatch-display">0s</span></div>
+      </div>
+
+      <div class="question-box" id="question-display">Simplify:</div>
+
+      <!-- Stacked Fraction Inputs -->
+      <div class="fraction-wrapper">
+        <div class="fraction-box">
+          <span class="input-label">Numerator</span>
+          <div id="num-input" class="frac-input-field active" onclick="setActiveField('num')"></div>
+          <div class="frac-line"></div>
+          <span class="input-label">Denominator</span>
+          <div id="den-input" class="frac-input-field" onclick="setActiveField('den')"></div>
+        </div>
+      </div>
+
+      <!-- Math Keyboard -->
+      <div class="math-keyboard">
+        <button class="key-btn var-key" id="var-btn-1" onclick="pressKey(this.textContent)">x</button>
+        <button class="key-btn var-key" id="var-btn-2" onclick="pressKey(this.textContent)">y</button>
+        <button class="key-btn action" onclick="pressKey('(')">(</button>
+        <button class="key-btn action" onclick="pressKey(')')">)</button>
+        <button class="key-btn action" onclick="pressKey('+')">+</button>
+        <button class="key-btn danger" onclick="pressBackspace()">⌫</button>
+
+        <button class="key-btn" onclick="pressKey('1')">1</button>
+        <button class="key-btn" onclick="pressKey('2')">2</button>
+        <button class="key-btn" onclick="pressKey('3')">3</button>
+        <button class="key-btn" onclick="pressKey('4')">4</button>
+        <button class="key-btn" onclick="pressKey('5')">5</button>
+        <button class="key-btn action" onclick="pressKey('-')">-</button>
+
+        <button class="key-btn" onclick="pressKey('6')">6</button>
+        <button class="key-btn" onclick="pressKey('7')">7</button>
+        <button class="key-btn" onclick="pressKey('8')">8</button>
+        <button class="key-btn" onclick="pressKey('9')">9</button>
+        <button class="key-btn" onclick="pressKey('0')">0</button>
+        <button class="key-btn danger" onclick="clearActiveInput()">C</button>
+      </div>
+
+      <button onclick="submitAnswer()" class="btn-main">Submit Answer 🎯</button>
+      <div id="feedback-message" class="feedback"></div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-screen" class="card hidden" style="text-align: center;">
+      <h1 style="font-size: 3.5rem;">💔</h1>
+      <h1 style="color: #dc2626;">Challenge Failed</h1>
+      <p class="subtitle">You ran out of lives! Don't give up—review your steps and try again.</p>
+      <button onclick="restartChallenge()" class="btn-main btn-danger">Redo Challenge 🔄</button>
+    </div>
+
+    <!-- Completion Screen -->
+    <div id="end-screen" class="card hidden" style="text-align: center;">
+      <h1 style="font-size: 3.5rem;">🏆</h1>
+      <h1>Quest Accomplished!</h1>
+      <p class="subtitle">You earned <strong>10 marks</strong> in <strong id="total-time-used">0s</strong>!</p>
+      <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+        Total Attempts: <strong id="total-attempts-count" style="color: var(--primary);">0</strong> | 
+        Accuracy: <strong id="final-accuracy" style="color: var(--primary);">0%</strong> | 
+        Lives Left: <strong id="final-lives" style="color: #dc2626;">5</strong>
+      </p>
+      
+      <div id="sync-status" class="sync-status sending">📡 Transmitting results to teacher's spreadsheet...</div>
+    </div>
+  </div>
+
+  <script>
+    const TARGET_MARKS = 10;
+    const MAX_LIVES = 5;
+    const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwno0sV9-kmAD5FCol_WlCALKSLNkqmqax140vWIqBjNfBSp6kAnyZyQYjeTBXKQoFX/exec";
+
+    let studentClass = "", studentClassNum = "", studentName = "";
+    let score = 0, lives = MAX_LIVES, totalAttempts = 0;
+    let stopwatchInterval = null, totalSecondsUsed = 0;
+    
+    let activeField = 'num'; // 'num' or 'den'
+    let numInput = "", denInput = "";
+    
+    let currentQuestion = {};
+    let isGameActive = false;
+
+    const numEl = document.getElementById('num-input');
+    const denEl = document.getElementById('den-input');
+    const questionDisplay = document.getElementById('question-display');
+    const feedbackEl = document.getElementById('feedback-message');
+    const syncStatusEl = document.getElementById('sync-status');
+    const livesDisplay = document.getElementById('lives-display');
+
+    function setActiveField(field) {
+      activeField = field;
+      if (field === 'num') {
+        numEl.classList.add('active');
+        denEl.classList.remove('active');
+      } else {
+        denEl.classList.add('active');
+        numEl.classList.remove('active');
+      }
+    }
+
+    function pressKey(char) {
+      if (!isGameActive) return;
+      if (activeField === 'num') {
+        numInput += char;
+        numEl.textContent = numInput;
+      } else {
+        denInput += char;
+        denEl.textContent = denInput;
+      }
+    }
+
+    function pressBackspace() {
+      if (!isGameActive) return;
+      if (activeField === 'num') {
+        numInput = numInput.slice(0, -1);
+        numEl.textContent = numInput;
+      } else {
+        denInput = denInput.slice(0, -1);
+        denEl.textContent = denInput;
+      }
+    }
+
+    function clearActiveInput() {
+      if (!isGameActive) return;
+      if (activeField === 'num') {
+        numInput = "";
+        numEl.textContent = "";
+      } else {
+        denInput = "";
+        denEl.textContent = "";
+      }
+    }
+
+    function updateLivesUI() {
+      livesDisplay.textContent = "❤️".repeat(lives) + "🖤".repeat(MAX_LIVES - lives);
+    }
+
+    function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+    function generateQuestion() {
+      const vars = ['x', 'h', 'k', 'd'];
+      const v = vars[getRandomInt(0, vars.length - 1)];
+
+      document.getElementById('var-btn-1').textContent = v;
+      document.getElementById('var-btn-2').textContent = v === 'x' ? 'y' : 'x';
+
+      const op = Math.random() < 0.5 ? '+' : '-';
+      const A = getRandomInt(1, 4);
+      const B = getRandomInt(1, 4);
+
+      let a = getRandomInt(1, 6), b = getRandomInt(-7, 7);
+      while (b === 0) b = getRandomInt(-7, 7);
+
+      let c = getRandomInt(1, 6), d = getRandomInt(-7, 7);
+      while (d === 0 || (a === c && b === d)) d = getRandomInt(-7, 7);
+
+      const fmtLinear = (coef, val, varName) => {
+        let part1 = coef === 1 ? varName : (coef === -1 ? `-${varName}` : `${coef}${varName}`);
+        let part2 = val > 0 ? `+${val}` : `${val}`;
+        return `${part1}${part2}`;
+      };
+
+      const den1Str = fmtLinear(a, b, v);
+      const den2Str = fmtLinear(c, d, v);
+
+      questionDisplay.innerHTML = `Simplify:<br>
+      <div class="math-expression">
+        <div class="math-fraction">
+          <div class="math-num">${A}</div>
+          <div class="math-den">${den1Str}</div>
+        </div>
+        <span class="math-op">${op}</span>
+        <div class="math-fraction">
+          <div class="math-num">${B}</div>
+          <div class="math-den">${den2Str}</div>
+        </div>
+      </div>`;
+
+      let numCoef = op === '+' ? (A * c + B * a) : (A * c - B * a);
+      let numConst = op === '+' ? (A * d + B * b) : (A * d - B * b);
+
+      currentQuestion = {
+        variable: v,
+        numCoef: numCoef,
+        numConst: numConst,
+        den1: den1Str,
+        den2: den2Str
+      };
+    }
+
+    function cleanStr(str) {
+      return str.replace(/\s+/g, '').toLowerCase().replace(/\+-/g, '-');
+    }
+
+    function getExpectedNumStrings(coef, constVal, v) {
+      let results = [];
+      let part1 = "";
+      if (coef === 1) part1 = v;
+      else if (coef === -1) part1 = `-${v}`;
+      else if (coef !== 0) part1 = `${coef}${v}`;
+
+      let part2 = "";
+      if (constVal > 0 && coef !== 0) part2 = `+${constVal}`;
+      else if (constVal !== 0) part2 = `${constVal}`;
+
+      if (coef === 0 && constVal === 0) return ["0"];
+      
+      let standard = `${part1}${part2}`;
+      results.push(cleanStr(standard));
+      
+      if (part2 && part1) {
+        let swapped = `${constVal}${coef > 0 ? '+' : ''}${part1}`;
+        results.push(cleanStr(swapped));
+      }
+
+      return results;
+    }
+
+    function validateAnswer() {
+      const userNum = cleanStr(numInput);
+      const userDen = cleanStr(denInput);
+
+      if (!userNum || !userDen) return false;
+
+      const validNums = getExpectedNumStrings(currentQuestion.numCoef, currentQuestion.numConst, currentQuestion.variable);
+      const isNumCorrect = validNums.includes(userNum);
+
+      const d1 = currentQuestion.den1;
+      const d2 = currentQuestion.den2;
+      const validDen1 = cleanStr(`(${d1})(${d2})`);
+      const validDen2 = cleanStr(`(${d2})(${d1})`);
+
+      const isDenCorrect = (userDen === validDen1 || userDen === validDen2);
+
+      return isNumCorrect && isDenCorrect;
+    }
+
+    function submitAnswer() {
+      if (!isGameActive) return;
+
+      totalAttempts++;
+      const isCorrect = validateAnswer();
+
+      if (isCorrect) {
+        score++;
+        document.getElementById('current-score').textContent = score;
+        feedbackEl.className = "feedback correct";
+        feedbackEl.textContent = "✨ Excellent! Correct simplification.";
+
+        if (score >= TARGET_MARKS) {
+          isGameActive = false;
+          clearInterval(stopwatchInterval);
+          setTimeout(showEndScreen, 1000);
+        } else {
+          setTimeout(nextQuestion, 1200);
+        }
+      } else {
+        lives--;
+        updateLivesUI();
+        feedbackEl.className = "feedback incorrect";
+
+        const validNums = getExpectedNumStrings(currentQuestion.numCoef, currentQuestion.numConst, currentQuestion.variable);
+        feedbackEl.textContent = `❌ Incorrect! Answer: (${validNums[0]}) / (${currentQuestion.den1})(${currentQuestion.den2})`;
+
+        if (lives <= 0) {
+          isGameActive = false;
+          clearInterval(stopwatchInterval);
+          setTimeout(showGameOverScreen, 1500);
+        } else {
+          setTimeout(nextQuestion, 2000);
+        }
+      }
+    }
+
+    function nextQuestion() {
+      feedbackEl.textContent = '';
+      feedbackEl.className = 'feedback';
+      numInput = ""; denInput = "";
+      numEl.textContent = ""; denEl.textContent = "";
+      setActiveField('num');
+      generateQuestion();
+    }
+
+    function startStopwatch() {
+      totalSecondsUsed = 0;
+      clearInterval(stopwatchInterval);
+      stopwatchInterval = setInterval(() => {
+        totalSecondsUsed++;
+        const mins = Math.floor(totalSecondsUsed / 60);
+        const secs = totalSecondsUsed % 60;
+        document.getElementById('stopwatch-display').textContent = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+      }, 1000);
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+    }
+
+    function saveRecord(status) {
+      const formattedTime = formatTime(totalSecondsUsed);
+      const payload = {
+        className: studentClass,
+        classNum: studentClassNum,
+        name: studentName,
+        marks: score,
+        livesLeft: lives,
+        status: status,
+        timeUsedFormatted: formattedTime,
+        attempts: totalAttempts,
+        accuracy: totalAttempts > 0 ? ((score / totalAttempts) * 100).toFixed(1) + "%" : "0%",
+        timestamp: new Date().toLocaleString()
+      };
+
+      fetch(WEBHOOK_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        syncStatusEl.className = "sync-status success";
+        syncStatusEl.textContent = "✅ Result successfully logged to Google Sheet!";
+      })
+      .catch((err) => {
+        console.error("Transmission error:", err);
+        syncStatusEl.className = "sync-status error";
+        syncStatusEl.textContent = "⚠️ Could not connect to online sheet. Saved locally.";
+      });
+    }
+
+    function showGameOverScreen() {
+      document.getElementById('practice-screen').classList.add('hidden');
+      document.getElementById('game-over-screen').classList.remove('hidden');
+      saveRecord("FAILED (0 Lives)");
+    }
+
+    function showEndScreen() {
+      document.getElementById('practice-screen').classList.add('hidden');
+      document.getElementById('end-screen').classList.remove('hidden');
+      document.getElementById('total-time-used').textContent = formatTime(totalSecondsUsed);
+      document.getElementById('total-attempts-count').textContent = totalAttempts;
+      document.getElementById('final-accuracy').textContent = `${((score / totalAttempts) * 100).toFixed(1)}%`;
+      document.getElementById('final-lives').textContent = lives;
+
+      saveRecord("PASSED");
+    }
+
+    function restartChallenge() {
+      document.getElementById('game-over-screen').classList.add('hidden');
+      document.getElementById('practice-screen').classList.remove('hidden');
+      score = 0;
+      lives = MAX_LIVES;
+      totalAttempts = 0;
+      isGameActive = true;
+      document.getElementById('current-score').textContent = 0;
+      updateLivesUI();
+      startStopwatch();
+      nextQuestion();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (!isGameActive) return;
+      const key = e.key;
+
+      if (['x', 'y', 'h', 'k', 'd', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '-', '(', ')'].includes(key.toLowerCase())) {
+        pressKey(key.toLowerCase());
+      } else if (key === 'Backspace') {
+        pressBackspace();
+      } else if (key === 'Enter') {
+        submitAnswer();
+      } else if (key === 'Tab') {
+        e.preventDefault();
+        setActiveField(activeField === 'num' ? 'den' : 'num');
+      } else if (key === 'Escape') {
+        clearActiveInput();
+      }
+    });
+
+    document.getElementById('start-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      studentClass = document.getElementById('student-class').value.trim().toUpperCase();
+      studentClassNum = document.getElementById('student-class-num').value.trim();
+      studentName = document.getElementById('student-name').value.trim();
+
+      if (!studentClass || !studentClassNum || !studentName) return;
+
+      document.getElementById('display-info').textContent = `${studentClass} (${studentClassNum}) ${studentName}`;
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('practice-screen').classList.remove('hidden');
+
+      score = 0;
+      lives = MAX_LIVES;
+      totalAttempts = 0;
+      isGameActive = true;
+      document.getElementById('current-score').textContent = 0;
+      updateLivesUI();
+      startStopwatch();
+      nextQuestion();
+    });
+  </script>
+</body>
+</html>
